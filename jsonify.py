@@ -6,8 +6,7 @@ def parse(path):
 			lines.append(line)
 		count = int(lines[0].split(" ")[2])
 		attr = {}
-		required_keys = [".gnu.hash", ".dynamic", ".dynsym", ".dynstr", ".got",
-		".plt", ".rodata", ".rela.dyn"]
+		required_keys = [".interp",".note.ABI-tag",".note.gnu.build-id", ".gnu.hash", ".dynsym", ".dynstr", ".gnu.version", ".gnu.version_r", ".rela.dyn", ".rela.plt", ".init", ".plt", ".plt.got",".fini", ".rodata", ".eh_frame_hdr", ".eh_frame", ".init_array", ".fini_array", ".jcr", ".dynamic", ".got", ".got.plt", ".comment", ".shstrtab", ".symtab", ".strtab"]
 		for i in range(1, count):
 			split_line = lines[4+i].split()
 			if i <= 9:
@@ -46,6 +45,5 @@ def parse(path):
 		data[filename] = temp_data
 
 	dump(data, open("data.json", "w"))
-
 
 parse(argv[1])
