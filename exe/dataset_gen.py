@@ -27,6 +27,7 @@ def getCommand():
 	command += "wait"
 	return command
 
+
 process = subprocess.Popen(getCommand() , stdout=subprocess.PIPE, shell = True)
 proc_stdout = process.communicate()[0].strip()
 print proc_stdout
