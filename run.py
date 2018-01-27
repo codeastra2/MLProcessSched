@@ -7,6 +7,7 @@ import os.path, csv
 dic={}
 path = os.getcwd() + '/exe/'
 dirs = [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]
+row_header = []
 
 
 '''
@@ -46,9 +47,13 @@ Creates a line of text from sorted keys
 '''
 def create_line(file):
 	global dic
+	global row_header
 	li = []
 	keys = dic.keys()
 	keys.sort()
+	if not row_header:
+		row_header = keys[:]
+		row_header += ['start_time', 'end_time', 'total_time']
 	for key in keys:
 		li.append(dic[key])
 	li = [file.split('_')[0]] + li
@@ -93,8 +98,11 @@ for dir in dirs:
 		output_2[i] = output_2[i].split(',')
 	
 	''' 5 '''
+
 	with open('output.csv', 'a') as f:
 	    w = csv.writer(f, dialect='excel')
+	    if os.stat('output.csv').st_size == 0:
+	    	w.writerow(['id']+row_header)
 	    for i in output_1:
 	    	t = []
 	    	for j in output_2:
