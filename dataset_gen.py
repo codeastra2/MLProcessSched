@@ -83,7 +83,7 @@ def write_to_csv():
                 command = []
                 command.append(dataset_index)
                 for index in range(0,len(prog_input_value)):
-                    command.append(prog_name[index])
+                    command.append(prog_name[index].split('.')[0])
                     command.append(prog_input_value[index])
                     command.append(nice_value[index])
                 filewriter.writerow(command)
