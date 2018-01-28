@@ -1,20 +1,19 @@
-from sys import argv
 from subprocess import Popen, PIPE
 from os import listdir
 import os.path, csv
 
 
-dic={}
-path = os.getcwd() + '/exe/'
-dirs = [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]
+PATH = os.getcwd() + '/exe/'
+dic = {}
 row_header = []
 
 
 '''
 27 attributes
 '''
-def parse_1(s):
+def command_readelf(command):
 	global dic
+	s = Popen(command, shell=True, stdout=PIPE).stdout
 	lines = list(s)
 	count = int(lines[0].split(' ')[2])
 	required_keys = ['.interp','.note.ABI-tag','.note.gnu.build-id', '.gnu.hash', '.dynsym', '.dynstr', '.gnu.version', '.gnu.version_r', '.rela.dyn', '.rela.plt', '.init', '.plt', '.plt.got','.fini', '.rodata', '.eh_frame_hdr', '.eh_frame', '.init_array', '.fini_array', '.jcr', '.dynamic', '.got', '.got.plt', '.comment', '.shstrtab', '.symtab', '.strtab']
@@ -32,9 +31,11 @@ def parse_1(s):
 '''
 5 attributes
 '''
-def parse_2(s, input_size, nice_value):
+def command_size(command, input_size, nice_value):
 	global dic
+	s = Popen(command, shell=True, stdout=PIPE).stdout
 	lines = list(s)
+
 	dic['.text'] = int(lines[1].split()[0])
 	dic['.data'] = int(lines[1].split()[1])
 	dic['.bss'] = int(lines[1].split()[2])
@@ -45,7 +46,7 @@ def parse_2(s, input_size, nice_value):
 '''
 Creates a line of text from sorted keys
 '''
-def create_line(file):
+def create_csv_row(file):
 	global dic
 	global row_header
 	li = []
@@ -54,6 +55,7 @@ def create_line(file):
 	if not row_header:
 		row_header = keys[:]
 		row_header += ['start_time', 'end_time', 'total_time']
+	
 	for key in keys:
 		li.append(dic[key])
 	li = [file.split('_')[0]] + li
@@ -67,38 +69,29 @@ def create_line(file):
 4. Collects attributes post execution
 5. Log to CSV
 '''
-for dir in dirs:
-	dir = path + dir
+def run_set(values):
+	global PATH
+	run = ''
 	output_1 = []
 	output_2 = []
 	
 	''' 1 and 2'''
-	for file in os.listdir(dir):
+	for file in os.listdir(PATH):
 		dic = {}
-		input_size, nice_value = file.split('_')[1:]
-
-		command = 'readelf -SW %s' % dir + '/' + file
-		parse_1(Popen(command, shell=True, stdout=PIPE).stdout)
-		
-		command = 'size %s' % dir + '/' + file
-		parse_2(Popen(command, shell=True, stdout=PIPE).stdout, input_size, nice_value)
-		t = create_line(file)
-		output_1.append(t)
+		run += './' + file + ' ' + str(values[file][0]) + ' ' + str(values[file][1]) + ' & '
+		command_readelf('readelf -SW %s' % PATH + file)
+		command_size('size %s' % PATH + file, values[file][0], values[file][1])
+		output_1.append(create_csv_row(file))
 
 	''' 3 '''
-	command = ''
-	for file in os.listdir(dir):
-		command += './' + file + ' ' + str(file.split('_')[1]) + ' ' + str(file.split('_')[2]) + ' & '
-	
-	command += 'wait'
-	output_2 = (Popen(command, stdout=PIPE, shell = True, cwd = dir).communicate()[0].strip()).splitlines()
+	run += 'wait'
+	output_2 = Popen(run, stdout=PIPE, shell = True, cwd = PATH).communicate()[0].strip().splitlines()
 	
 	''' 4 '''
 	for i in range(len(output_2)):
 		output_2[i] = output_2[i].split(',')
 	
 	''' 5 '''
-
 	with open('output.csv', 'a') as f:
 	    w = csv.writer(f, dialect='excel')
 	    if os.stat('output.csv').st_size == 0:
@@ -112,4 +105,24 @@ for dir in dirs:
 	    			t.append(int(j[3]))
 	    	w.writerow(i + t)
 
-	print 'Done with ' + dir
+
+'''
+Read input sizes and nice values for a batch of programs from CSV
+'''
+def read():
+	i = 1
+	with open('input.csv', 'r') as csvfile:
+		rows = csv.reader(csvfile)
+		for row in rows:
+			print ('Set ' + row[0])
+			del row[0]
+			values = {}
+			values[row[0]] = [int(row[1]), int(row[2])]
+			values[row[3]] = [int(row[4]), int(row[5])]
+			values[row[6]] = [int(row[7]), int(row[8])]
+			values[row[9]] = [int(row[10]), int(row[11])]
+			values[row[12]] = [int(row[13]), int(row[14])]
+			run_set(values)
+			i = i + 1
+
+read()
