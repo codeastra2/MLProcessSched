@@ -6,7 +6,10 @@
 #include <unistd.h>
 #include <inttypes.h>
 
-long long INPUT_SIZE;
+
+#define INPUT_SIZE 10
+#define NICE_VALUE 0
+
 int64_t start,end;
 
 int fib(int n) {
@@ -29,9 +32,8 @@ int64_t getTime() {
     return micros;
 }
 
-void main(int argc, char *argv[]) {
-    INPUT_SIZE = atoi(argv[1]);
-    nice(atoi(argv[2]));
+void main() {
+    nice(NICE_VALUE);
 
     start = getTime();
     for (long long i = 1 ; i <= INPUT_SIZE ; i++ )
