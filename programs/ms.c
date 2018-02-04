@@ -6,7 +6,11 @@
 #include <unistd.h>
 #include <inttypes.h>
 
-long long INPUT_SIZE, *a;
+
+#define INPUT_SIZE 10
+#define NICE_VALUE 0
+
+long long  *a;
 int64_t start,end;
 
 void merge(long long l, long long m, long long r) {
@@ -55,12 +59,11 @@ int64_t getTime() {
     return micros;
 }
 
-void main(int argc, char *argv[]) {
-    INPUT_SIZE = atoi(argv[1]);
-    nice(atoi(argv[2]));
-	
-	a = malloc(INPUT_SIZE * sizeof(long long));
-    
+void main() {
+    nice(NICE_VALUE);
+
+    a = malloc(INPUT_SIZE * sizeof(long long));
+
     for (long long i=0; i< INPUT_SIZE; i++)
         a[i] = rand() % 1000000;
 
