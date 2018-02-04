@@ -7,7 +7,9 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-long INPUT_SIZE;
+#define INPUT_SIZE 10
+#define NICE_VALUE 0
+
 int64_t start,end;
 
 int64_t getTime() {
@@ -24,38 +26,37 @@ int64_t getTime() {
 void mat() {
     long i, j, k;
 
-	long **m1 = (long **)malloc(INPUT_SIZE * sizeof(long *));
-	long **m2 = (long **)malloc(INPUT_SIZE * sizeof(long *));
-	long **m3 = (long **)malloc(INPUT_SIZE * sizeof(long *));
-	
-	for (i=0; i<INPUT_SIZE; i++){
-		m1[i] = (long *)malloc(INPUT_SIZE * sizeof(long));
-        m2[i] = (long *)malloc(INPUT_SIZE * sizeof(long));
-		m3[i] = (long *)malloc(INPUT_SIZE * sizeof(long));
-	}
-	
-	for(i = 0 ; i < INPUT_SIZE ; i++){
-		for(j =0 ; j < INPUT_SIZE ; j++){
-			m1[i][j] = rand() % 1000000;
-			m2[i][j] = rand() % 1000000;
-		}
-	}
+    long **m1 = (long **)malloc(INPUT_SIZE * sizeof(long *));
+    long **m2 = (long **)malloc(INPUT_SIZE * sizeof(long *));
+    long **m3 = (long **)malloc(INPUT_SIZE * sizeof(long *));
 
-	start = getTime();
+    for (i=0; i<INPUT_SIZE; i++) {
+        m1[i] = (long *)malloc(INPUT_SIZE * sizeof(long));
+        m2[i] = (long *)malloc(INPUT_SIZE * sizeof(long));
+        m3[i] = (long *)malloc(INPUT_SIZE * sizeof(long));
+    }
+
+    for(i = 0 ; i < INPUT_SIZE ; i++) {
+        for(j =0 ; j < INPUT_SIZE ; j++) {
+            m1[i][j] = rand() % 1000000;
+            m2[i][j] = rand() % 1000000;
+        }
+    }
+
+    start = getTime();
     for (i = 0; i < INPUT_SIZE; i++) {
         for (j = 0; j < INPUT_SIZE; j++) {
-			m3[i][j] = 0;
-            for (k = 0; k < INPUT_SIZE; k++) {                
+            m3[i][j] = 0;
+            for (k = 0; k < INPUT_SIZE; k++) {
                 m3[i][j] += m1[i][j] + m2[i][j];
             }
         }
     }
-	end = getTime();
+    end = getTime();
 }
 
-void main(int argc, char *argv[]) {
-    INPUT_SIZE = atoi(argv[1]);
-    nice(atoi(argv[2]));
+void main() {
+    nice(NICE_VALUE);
 
     mat();
 
