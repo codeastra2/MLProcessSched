@@ -3,16 +3,32 @@ from os import listdir
 import os.path, csv
 
 
-PATH = os.getcwd() + '/exe/'
-dic = {}
-row_header = []
+INPUT = os.getcwd()+ '/exe/'
+attributes = []
+data = {}
+
+
+'''
+5 attributes
+'''
+def command_size(command, input_size, nice_value):
+	global INPUT, attributes, data
+
+	s = Popen(command, shell=True, stdout=PIPE).stdout
+	lines = list(s)
+	data['.text'] = int(lines[1].split()[0])
+	data['.data'] = int(lines[1].split()[1])
+	data['.bss'] = int(lines[1].split()[2])
+	data['.input_size'] = int(input_size)
+	data['.nice_value'] = int(nice_value)
 
 
 '''
 27 attributes
 '''
 def command_readelf(command):
-	global dic
+	global INPUT, attributes, data
+
 	s = Popen(command, shell=True, stdout=PIPE).stdout
 	lines = list(s)
 	count = int(lines[0].split(' ')[2])
@@ -22,42 +38,26 @@ def command_readelf(command):
 		line = lines[4+i].split()
 		if i <= 9:
 			if line[2] in required_keys:
-				dic[line[2]] = int(line[6], 16)
+				data[line[2]] = int(line[6], 16)
 		else:
 			if line[1] in required_keys:
-				dic[line[1]] = int(line[5], 16)
+				data[line[1]] = int(line[5], 16)
 
 
 '''
-5 attributes
-'''
-def command_size(command, input_size, nice_value):
-	global dic
-	s = Popen(command, shell=True, stdout=PIPE).stdout
-	lines = list(s)
-
-	dic['.text'] = int(lines[1].split()[0])
-	dic['.data'] = int(lines[1].split()[1])
-	dic['.bss'] = int(lines[1].split()[2])
-	dic['.input_size'] = int(input_size)
-	dic['.nice_value'] = int(nice_value)
-
-
-'''
-Creates a line of text from sorted keys
+Creates a line of text with keys in sorted order
 '''
 def create_csv_row(file):
-	global dic
-	global row_header
+	global INPUT, attributes, data
 	li = []
-	keys = dic.keys()
+	keys = data.keys()
 	keys.sort()
-	if not row_header:
-		row_header = keys[:]
-		row_header += ['start_time', 'end_time', 'total_time']
+	if not attributes:
+		attributes = keys[:]
+		attributes += ['start_time', 'end_time', 'total_time']
 	
 	for key in keys:
-		li.append(dic[key])
+		li.append(data[key])
 	li = [file.split('_')[0]] + li
 	return li
 
@@ -69,23 +69,24 @@ def create_csv_row(file):
 4. Collects attributes post execution
 5. Log to CSV
 '''
-def run_set(values):
-	global PATH
+def run_set(path):
+	global INPUT, attributes, data
+
 	run = ''
 	output_1 = []
 	output_2 = []
 	
 	''' 1 and 2'''
-	for file in os.listdir(PATH):
-		dic = {}
-		run += './' + file + ' ' + str(values[file][0]) + ' ' + str(values[file][1]) + ' & '
-		command_readelf('readelf -SW %s' % PATH + file)
-		command_size('size %s' % PATH + file, values[file][0], values[file][1])
+	for file in os.listdir(path):
+		data = {}
+		run += './' + file + ' & '
+		command_readelf('readelf -SW %s' % path + file)
+		command_size('size %s' % path + file, file.split('_')[1], file.split('_')[2])
 		output_1.append(create_csv_row(file))
 
 	''' 3 '''
 	run += 'wait'
-	output_2 = Popen(run, stdout=PIPE, shell = True, cwd = PATH).communicate()[0].strip().splitlines()
+	output_2 = Popen(run, stdout=PIPE, shell = True, cwd = path).communicate()[0].strip().splitlines()
 	
 	''' 4 '''
 	for i in range(len(output_2)):
@@ -95,7 +96,7 @@ def run_set(values):
 	with open('output.csv', 'a') as f:
 	    w = csv.writer(f, dialect='excel')
 	    if os.stat('output.csv').st_size == 0:
-	    	w.writerow(['id']+row_header)
+	    	w.writerow(['id']+attributes)
 	    for i in output_1:
 	    	t = []
 	    	for j in output_2:
@@ -106,23 +107,15 @@ def run_set(values):
 	    	w.writerow(i + t)
 
 
-'''
-Read input sizes and nice values for a batch of programs from CSV
-'''
-def read():
-	i = 1
-	with open('input.csv', 'r') as csvfile:
-		rows = csv.reader(csvfile)
-		for row in rows:
-			print ('Set ' + row[0])
-			del row[0]
-			values = {}
-			values[row[0]] = [int(row[1]), int(row[2])]
-			values[row[3]] = [int(row[4]), int(row[5])]
-			values[row[6]] = [int(row[7]), int(row[8])]
-			values[row[9]] = [int(row[10]), int(row[11])]
-			values[row[12]] = [int(row[13]), int(row[14])]
-			run_set(values)
-			i = i + 1
+def main():
+	global INPUT, attributes, data
 
-read()
+	directories = os.listdir(INPUT)
+	directories.sort()
+	for directory in directories:
+		print('Running ' + directory)
+		run_set(INPUT + directory + '/')
+
+
+if __name__ == "__main__":
+	main()
