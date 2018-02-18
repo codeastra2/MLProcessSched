@@ -4,33 +4,33 @@ nice_values = []
 prog_input_values = []
 prog_input_map = {
     "bub.c" : {
-        "start_size":1,
-        "end_size":8000,
-        "step_size":4000,
+        "start_size":1000,
+        "end_size":10000,
+        "step_size":4500,
         "next_prog":"fib.c"
     },
     "fib.c" : {
-        "start_size":1,
-        "end_size":30,
-        "step_size":15,
+        "start_size":12,
+        "end_size":36,
+        "step_size":12,
         "next_prog":"hs.c"
     },
     "hs.c" : {
-        "start_size":10,
-        "end_size":13,
-        "step_size":2,
+        "start_size":1000,
+        "end_size":101234,
+        "step_size":50000,
         "next_prog":"mat.c",
     },
     "mat.c" : {
-        "start_size":1,
-        "end_size":50,
-        "step_size":25,
+        "start_size":100,
+        "end_size":700,
+        "step_size":300,
         "next_prog":"ms.c"
     },
     "ms.c" : {
-        "start_size":1,
-        "end_size":5000,
-        "step_size":3000,
+        "start_size":1000,
+        "end_size":100134,
+        "step_size":50000,
         "next_prog":"xyz"
     }
 }
@@ -40,7 +40,7 @@ def nice_value_gen(index, nice_value_list):
     if index > 4:
         nice_values.append(tuple(nice_value_list))
         return
-    for nice_value in range(-2,2):
+    for nice_value in range(-18,20,9):
         old_value = nice_value_list[index]
         nice_value_list[index] = nice_value
         nice_value_gen(index+1, nice_value_list)
