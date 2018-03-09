@@ -1,26 +1,20 @@
 // Matrix multiplication - O(n^3)
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
-#include <stdint.h>
 #include <inttypes.h>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <unistd.h>
 
-#define INPUT_SIZE 10
-#define NICE_VALUE 0
+#define INPUT_SIZE 100
+#define NICE_VALUE -18
 
+struct timeval time;
 int64_t start,end;
 
 int64_t getTime() {
-    struct timespec tms;
-    if (clock_gettime(CLOCK_MONOTONIC,&tms))
-        return -1;
-    int64_t micros = tms.tv_sec * 1000000;
-    micros += tms.tv_nsec/1000;
-    if (tms.tv_nsec % 1000 >= 500)
-        ++micros;
-    return micros;
+    gettimeofday(&time, NULL);
+    return time.tv_sec * 1000000 + time.tv_usec;
 }
 
 void mat() {
@@ -48,7 +42,7 @@ void mat() {
         for (j = 0; j < INPUT_SIZE; j++) {
             m3[i][j] = 0;
             for (k = 0; k < INPUT_SIZE; k++) {
-                m3[i][j] += m1[i][j] + m2[i][j];
+                m3[i][j] += m1[i][k] + m2[k][j];
             }
         }
     }
@@ -60,5 +54,5 @@ void main() {
 
     mat();
 
-    printf("mat,%"PRId64",%"PRId64",%"PRId64"\n",start,end,end - start);
+    printf("mat,%"PRId64",%"PRId64",%"PRId64"\n", start, end, end - start);
 }
