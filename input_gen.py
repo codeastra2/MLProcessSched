@@ -5,31 +5,31 @@ prog_input_values = []
 prog_input_map = {
     "bub.c" : {
         "start_size":1000,
-        "end_size":10000,
+        "end_size":10001,
         "step_size":4500,
         "next_prog":"fib.c"
     },
     "fib.c" : {
         "start_size":12,
-        "end_size":36,
+        "end_size":37,
         "step_size":12,
         "next_prog":"hs.c"
     },
     "hs.c" : {
         "start_size":1000,
-        "end_size":101234,
+        "end_size":101001,
         "step_size":50000,
         "next_prog":"mat.c",
     },
     "mat.c" : {
         "start_size":100,
-        "end_size":700,
+        "end_size":701,
         "step_size":300,
         "next_prog":"ms.c"
     },
     "ms.c" : {
         "start_size":1000,
-        "end_size":100134,
+        "end_size":101001,
         "step_size":50000,
         "next_prog":"xyz"
     }
@@ -83,7 +83,7 @@ def write_to_csv():
                 command = []
                 command.append(dataset_index)
                 for index in range(0,len(prog_input_value)):
-                    command.append(prog_name[index].split('.')[0])
+                    command.append(prog_name[index].split('.')[0] + ".c")
                     command.append(prog_input_value[index])
                     command.append(nice_value[index])
                 filewriter.writerow(command)
