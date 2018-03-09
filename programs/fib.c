@@ -1,15 +1,15 @@
 // Fibonacci Series - O(2^n)
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
 #include <inttypes.h>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <unistd.h>
 
+#define INPUT_SIZE 12
+#define NICE_VALUE -18
 
-#define INPUT_SIZE 10
-#define NICE_VALUE 0
-
+struct timeval time;
 int64_t start,end;
 
 int fib(int n) {
@@ -22,14 +22,8 @@ int fib(int n) {
 }
 
 int64_t getTime() {
-    struct timespec tms;
-    if (clock_gettime(CLOCK_MONOTONIC,&tms))
-        return -1;
-    int64_t micros = tms.tv_sec * 1000000;
-    micros += tms.tv_nsec/1000;
-    if (tms.tv_nsec % 1000 >= 500)
-        ++micros;
-    return micros;
+    gettimeofday(&time, NULL);
+    return time.tv_sec * 1000000 + time.tv_usec;
 }
 
 void main() {
@@ -40,5 +34,5 @@ void main() {
         fib(i);
     end = getTime();
 
-    printf("fib,%"PRId64",%"PRId64",%"PRId64"\n",start,end,end - start);
+    printf("fib,%"PRId64",%"PRId64",%"PRId64"\n", start, end, end - start);
 }
