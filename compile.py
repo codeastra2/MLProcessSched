@@ -23,8 +23,8 @@ def write(values, i):
 		new_code = codes[code][:]
 		new_input_size = str(values[code][0])
 		new_nice_value = str(values[code][1])
-		new_code[9] = '#define INPUT_SIZE ' + new_input_size + '\n'
-		new_code[10] = '#define NICE_VALUE ' + new_nice_value + '\n'
+		new_code[8] = '#define INPUT_SIZE ' + new_input_size + '\n'
+		new_code[9] = '#define NICE_VALUE ' + new_nice_value + '\n'
 		name = new_path + '/' + code.split('.')[0] + '_' + new_input_size + '_' + new_nice_value + '.' + code.split('.')[1]
 		with open(INPUT + code, 'w') as w:
 			w.writelines(new_code)
