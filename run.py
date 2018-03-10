@@ -111,10 +111,11 @@ def main():
 	global INPUT, attributes, data
 
 	directories = os.listdir(INPUT)
+	directories = [int(x) for x in directories]
 	directories.sort()
 	for directory in directories:
-		print('Running ' + directory)
-		run_set(INPUT + directory + '/')
+		print('Running ' + str(directory))
+		run_set(INPUT + str(directory) + '/')
 
 
 if __name__ == "__main__":
