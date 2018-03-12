@@ -1,11 +1,14 @@
 from subprocess import Popen, PIPE
 from os import listdir
+from datetime import datetime
 import os.path, csv
 
 
 INPUT = os.getcwd()+ '/exe/'
+OUTPUT = os.getcwd() + '/csv/'
 attributes = []
 data = {}
+date_time = str(datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
 
 
 '''
@@ -93,9 +96,9 @@ def run_set(path):
 		output_2[i] = output_2[i].split(',')
 	
 	''' 5 '''
-	with open('output.csv', 'a') as f:
+	with open(OUTPUT + date_time + '.csv', 'a') as f:
 	    w = csv.writer(f, dialect='excel')
-	    if os.stat('output.csv').st_size == 0:
+	    if os.stat(OUTPUT + date_time + '.csv').st_size == 0:
 	    	w.writerow(['id']+attributes)
 	    for i in output_1:
 	    	t = []
@@ -109,6 +112,9 @@ def run_set(path):
 
 def main():
 	global INPUT, attributes, data
+	
+	if not os.path.exists(OUTPUT):
+		os.makedirs(OUTPUT)
 
 	directories = os.listdir(INPUT)
 	directories = [int(x) for x in directories]
