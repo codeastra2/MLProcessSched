@@ -40,7 +40,7 @@ def nice_value_gen(index, nice_value_list):
     if index > 4:
         nice_values.append(tuple(nice_value_list))
         return
-    for nice_value in range(-18,20,9):
+    for nice_value in range(-17,20,11):
         old_value = nice_value_list[index]
         nice_value_list[index] = nice_value
         nice_value_gen(index+1, nice_value_list)
