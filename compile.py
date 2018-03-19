@@ -97,7 +97,6 @@ def main():
 				values[row[3]] = [int(row[4]), int(row[5])]
 				values[row[6]] = [int(row[7]), int(row[8])]
 				values[row[9]] = [int(row[10]), int(row[11])]
-				values[row[12]] = [int(row[13]), int(row[14])]
 				write(values, i)
 			i += 1
 
