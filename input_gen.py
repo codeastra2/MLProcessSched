@@ -13,13 +13,7 @@ prog_input_map = {
         "start_size":12,
         "end_size":37,
         "step_size":12,
-        "next_prog":"hs.c"
-    },
-    "hs.c" : {
-        "start_size":1000,
-        "end_size":101001,
-        "step_size":50000,
-        "next_prog":"mat.c",
+        "next_prog":"mat.c"
     },
     "mat.c" : {
         "start_size":100,
@@ -34,10 +28,10 @@ prog_input_map = {
         "next_prog":"xyz"
     }
 }
-prog_name = ["bub.c", "fib.c", "hs.c", "mat.c", "ms.c"]
+prog_name = ["bub.c", "fib.c", "mat.c", "ms.c"]
 
 def nice_value_gen(index, nice_value_list):
-    if index > 4:
+    if index > 3:
         nice_values.append(tuple(nice_value_list))
         return
     for nice_value in range(-17,20,11):
@@ -48,12 +42,12 @@ def nice_value_gen(index, nice_value_list):
     return
 
 def nice_value_gen_helper():
-    initial_list=[21, 21, 21, 21, 21]
+    initial_list=[21, 21, 21, 21]
     nice_value_gen(0, initial_list)
     return
 
 def prog_input_gen(index, prog_name, prog_input_value_list):
-    if index > 4:
+    if index > 3:
         prog_input_values.append(tuple(prog_input_value_list))
         return
 
@@ -68,7 +62,7 @@ def prog_input_gen(index, prog_name, prog_input_value_list):
     return
 
 def prog_input_gen_helper():
-    initial_list=[-1, -1, -1, -1, -1]
+    initial_list=[-1, -1, -1, -1]
     initial_prog = "bub.c"
     prog_input_gen(0, initial_prog, initial_list)
     return
