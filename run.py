@@ -119,8 +119,8 @@ def run_set(path):
 	    	else:
 	    		write_buffer.append(i + t)
 
-	    # 5 records must be present for every batch, else error
-	    if len(write_buffer) == 5:
+	    # 4 programs must be present for every batch, else error
+	    if len(write_buffer) == 4:
 	    	write_buffer.sort()
 	    	for row in write_buffer:
 	    		w.writerow(row)
