@@ -6,6 +6,7 @@ import os.path, csv
 
 INPUT = os.getcwd()+ '/exe/'
 OUTPUT = os.getcwd() + '/csv/'
+ERROR = os.getcwd() + '/error/'
 attributes = []
 data = {}
 date_time = str(datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
@@ -96,10 +97,14 @@ def run_set(path):
 		output_2[i] = output_2[i].split(',')
 	
 	''' 5 '''
+	write_buffer = []
 	with open(OUTPUT + date_time + '.csv', 'a') as f:
 	    w = csv.writer(f, dialect='excel')
+	    
+	    # Write header
 	    if os.stat(OUTPUT + date_time + '.csv').st_size == 0:
 	    	w.writerow(['id']+attributes)
+	    
 	    for i in output_1:
 	    	t = []
 	    	for j in output_2:
@@ -107,7 +112,20 @@ def run_set(path):
 	    			t.append(int(j[1]))
 	    			t.append(int(j[2]))
 	    			t.append(int(j[3]))
-	    	w.writerow(i + t)
+
+	    	# 34 attributes must be present for every program, else error
+	    	if len(i+t) != 34:
+	    		raise Exception('Less attributes')
+	    	else:
+	    		write_buffer.append(i + t)
+
+	    # 5 records must be present for every batch, else error
+	    if len(write_buffer) == 5:
+	    	write_buffer.sort()
+	    	for row in write_buffer:
+	    		w.writerow(row)
+	    else:
+	    	raise Exception('Bad executables')
 
 
 def main():
@@ -116,12 +134,23 @@ def main():
 	if not os.path.exists(OUTPUT):
 		os.makedirs(OUTPUT)
 
+	if not os.path.exists(ERROR):
+		os.makedirs(ERROR)
+
 	directories = os.listdir(INPUT)
 	directories = [int(x) for x in directories]
 	directories.sort()
+	
 	for directory in directories:
-		print('Running ' + str(directory))
-		run_set(INPUT + str(directory) + '/')
+		
+		try:
+			print('Running ' + str(directory))
+			run_set(INPUT + str(directory) + '/')
+
+		except Exception as e:
+			print(e)
+			with open(ERROR + 'error.txt', 'a') as f:
+				f.write(date_time + '\t' + 'Running\t' + str(directory) + '\t' + str(e) + '\n')
 
 
 if __name__ == "__main__":
