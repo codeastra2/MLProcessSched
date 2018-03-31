@@ -1,4 +1,6 @@
+import copy
 import csv
+import random
 
 nice_values = []
 prog_input_values = []
@@ -28,43 +30,39 @@ prog_input_map = {
         "next_prog":"xyz"
     }
 }
-prog_name = ["bub.c", "fib.c", "mat.c", "ms.c"]
+nice_value_dict = {
+    "start": -18,
+    "end": 18
+}
+prog_names = ["bub.c", "fib.c", "mat.c", "ms.c"]
 
-def nice_value_gen(index, nice_value_list):
-    if index > 3:
-        nice_values.append(tuple(nice_value_list))
-        return
-    for nice_value in range(-18, 20, 9):
-        old_value = nice_value_list[index]
-        nice_value_list[index] = nice_value
-        nice_value_gen(index+1, nice_value_list)
-        nice_value_list[index] = old_value
+def nice_value_gen(nice_values_num):
+    for index in range(nice_values_num):
+        nice_value_list = []
+        for nice_index in range(0, 4):
+            nice_value_list.append(random.randint(nice_value_dict["start"],
+                                                  nice_value_dict["end"]))
+        nice_values.append(copy.deepcopy(nice_value_list))
     return
 
 def nice_value_gen_helper():
-    initial_list=[21, 21, 21, 21]
-    nice_value_gen(0, initial_list)
+    nice_values_num = 6**4
+    nice_value_gen(nice_values_num)
     return
 
-def prog_input_gen(index, prog_name, prog_input_value_list):
-    if index > 3:
-        prog_input_values.append(tuple(prog_input_value_list))
-        return
-
-    program = prog_input_map[prog_name]
-    next_prog_name = program["next_prog"]
-
-    for prog_input_value in range(program["start_size"], program["end_size"], program["step_size"]):
-        old_value = prog_input_value_list[index]
-        prog_input_value_list[index] = prog_input_value
-        prog_input_gen(index+1, next_prog_name, prog_input_value_list)
-        prog_input_value_list[index] = old_value
+def prog_input_gen(prog_input_num):
+    for index in range(0, prog_input_num):
+        prog_input_value_list = []
+        for prog_name in prog_names:
+            start = prog_input_map[prog_name]["start_size"]
+            end = prog_input_map[prog_name]["end_size"]
+            prog_input_value_list.append(random.randint(start, end))
+        prog_input_values.append(copy.deepcopy(prog_input_value_list))
     return
 
 def prog_input_gen_helper():
-    initial_list=[-1, -1, -1, -1]
-    initial_prog = "bub.c"
-    prog_input_gen(0, initial_prog, initial_list)
+    prog_input_num = (160000)/(6**4)
+    prog_input_gen(prog_input_num)
     return
 
 def write_to_csv():
@@ -77,7 +75,7 @@ def write_to_csv():
                 command = []
                 command.append(dataset_index)
                 for index in range(0,len(prog_input_value)):
-                    command.append(prog_name[index].split('.')[0] + ".c")
+                    command.append(prog_names[index].split('.')[0] + ".c")
                     command.append(prog_input_value[index])
                     command.append(nice_value[index])
                 filewriter.writerow(command)
