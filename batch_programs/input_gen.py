@@ -7,32 +7,24 @@ prog_input_values = []
 prog_input_map = {
     "bub.c" : {
         "start_size":1000,
-        "end_size":10001,
-        "step_size":3000,
-        "next_prog":"fib.c"
+        "end_size":10001
     },
     "fib.c" : {
         "start_size":29,
-        "end_size":36,
-        "step_size":2,
-        "next_prog":"mat.c"
+        "end_size":36
     },
     "mat.c" : {
         "start_size":100,
-        "end_size":341,
-        "step_size":80,
-        "next_prog":"ms.c"
+        "end_size":341
     },
     "ms.c" : {
         "start_size":10000,
-        "end_size":100001,
-        "step_size":30000,
-        "next_prog":"xyz"
+        "end_size":100001
     }
 }
 nice_value_dict = {
-    "start": -18,
-    "end": 18
+    "start": -20,
+    "end": 19
 }
 prog_names = ["bub.c", "fib.c", "mat.c", "ms.c"]
 
@@ -45,10 +37,12 @@ def nice_value_gen(nice_values_num):
         nice_values.append(copy.deepcopy(nice_value_list))
     return
 
+
 def nice_value_gen_helper():
     nice_values_num = 6**4
     nice_value_gen(nice_values_num)
     return
+
 
 def prog_input_gen(prog_input_num):
     for index in range(0, prog_input_num):
@@ -60,10 +54,12 @@ def prog_input_gen(prog_input_num):
         prog_input_values.append(copy.deepcopy(prog_input_value_list))
     return
 
+
 def prog_input_gen_helper():
     prog_input_num = (160000)/(6**4)
     prog_input_gen(prog_input_num)
     return
+
 
 def write_to_csv():
     with open('input.csv', 'wb') as csvfile:
@@ -82,6 +78,7 @@ def write_to_csv():
                 dataset_index = dataset_index + 1
     return
 
+
 def main():
     print("Generating the Nice values...")
     nice_value_gen_helper()
@@ -94,5 +91,6 @@ def main():
     print("Writing the dataset to CSV file...")
     write_to_csv()
 
+
 if __name__== "__main__":
-  main()
+    main()
