@@ -6,10 +6,27 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-#define INPUT_SIZE 51000
-#define NICE_VALUE -18
+#define INPUT_SIZE 100000
+#define NICE_VALUE 18
 
-long long  *a;
+#define METHOD_1 15, 17
+#define METHOD_2 18, 20
+#define METHOD_3 21, 23, 25, 27
+/*
+static long long a[INPUT_SIZE];
+*/
+
+long long a[INPUT_SIZE];
+
+/*
+long long *a;
+*/
+void allocate(){
+/*
+    a = malloc (INPUT_SIZE * sizeof(long long));
+*/
+}
+
 struct timeval time;
 int64_t start,end;
 
@@ -56,7 +73,7 @@ int64_t getTime() {
 void main() {
     nice(NICE_VALUE);
 
-    a = malloc(INPUT_SIZE * sizeof(long long));
+    allocate();
 
     for (long long i=0; i< INPUT_SIZE; i++)
         a[i] = rand() % 1000000;
