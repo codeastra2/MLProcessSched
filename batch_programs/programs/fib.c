@@ -6,8 +6,26 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-#define INPUT_SIZE 12
-#define NICE_VALUE -18
+#define INPUT_SIZE 35
+#define NICE_VALUE 18
+
+#define METHOD_1 15, 17
+#define METHOD_2 18, 20
+#define METHOD_3 21, 23, 25, 27
+/*
+
+*/
+/*
+
+*/
+/*
+
+*/
+void allocate(){
+/*
+
+*/
+}
 
 struct timeval time;
 int64_t start,end;
