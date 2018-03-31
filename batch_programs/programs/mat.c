@@ -6,8 +6,31 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-#define INPUT_SIZE 100
-#define NICE_VALUE -18
+#define INPUT_SIZE 308
+#define NICE_VALUE -13
+
+#define METHOD_1 15, 17
+#define METHOD_2 18, 20
+#define METHOD_3 21, 23, 25, 29
+
+static long m3[INPUT_SIZE][INPUT_SIZE];
+
+/*
+long m3[INPUT_SIZE][INPUT_SIZE];
+*/
+/*
+long **m3;
+*/
+void allocate(){
+/*
+    m3 = (long **)malloc(INPUT_SIZE * sizeof(long *));
+    for (int i=0; i<INPUT_SIZE; i++) 
+        m3[i] = (long *)malloc(INPUT_SIZE * sizeof(long));
+*/
+}
+
+long m1[INPUT_SIZE][INPUT_SIZE];
+long m2[INPUT_SIZE][INPUT_SIZE];
 
 struct timeval time;
 int64_t start,end;
@@ -19,17 +42,7 @@ int64_t getTime() {
 
 void mat() {
     long i, j, k;
-
-    long **m1 = (long **)malloc(INPUT_SIZE * sizeof(long *));
-    long **m2 = (long **)malloc(INPUT_SIZE * sizeof(long *));
-    long **m3 = (long **)malloc(INPUT_SIZE * sizeof(long *));
-
-    for (i=0; i<INPUT_SIZE; i++) {
-        m1[i] = (long *)malloc(INPUT_SIZE * sizeof(long));
-        m2[i] = (long *)malloc(INPUT_SIZE * sizeof(long));
-        m3[i] = (long *)malloc(INPUT_SIZE * sizeof(long));
-    }
-
+    
     for(i = 0 ; i < INPUT_SIZE ; i++) {
         for(j =0 ; j < INPUT_SIZE ; j++) {
             m1[i][j] = rand() % 1000000;
@@ -51,6 +64,8 @@ void mat() {
 
 void main() {
     nice(NICE_VALUE);
+    
+    allocate();
 
     mat();
 
