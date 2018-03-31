@@ -1,6 +1,9 @@
 from subprocess import Popen, PIPE
 from datetime import datetime
-import os, shutil, csv
+import os
+import shutil
+import csv
+import random
 
 
 INPUT = os.getcwd() + '/programs/'
@@ -32,6 +35,34 @@ def write(values, i):
 			new_code[8] = '#define INPUT_SIZE ' + new_input_size + '\n'
 			new_code[9] = '#define NICE_VALUE ' + new_nice_value + '\n'
 			
+			allocation_method = random.randint(0,2)
+			allocation_lines_1 = map(int, new_code[11].split('METHOD_1 ')[1].split(','))
+			allocation_lines_2 = map(int, new_code[12].split('METHOD_2 ')[1].split(','))
+			allocation_lines_3 = map(int, new_code[13].split('METHOD_3 ')[1].split(','))
+
+			new_code[allocation_lines_1[0]-1], new_code[allocation_lines_1[1]-1] = '/*\n', '*/\n'
+			new_code[allocation_lines_2[0]-1], new_code[allocation_lines_2[1]-1] = '/*\n', '*/\n'
+			new_code[allocation_lines_3[0]-1], new_code[allocation_lines_3[1]-1] = '/*\n', '*/\n'
+			new_code[allocation_lines_3[2]-1], new_code[allocation_lines_3[3]-1] = '/*\n', '*/\n'
+
+			if allocation_method == 0:
+				# Static variable
+				new_code[allocation_lines_1[0]-1], new_code[allocation_lines_1[1]-1] = '\n', '\n'
+			elif allocation_method == 1:
+				# Non-static variable
+				new_code[allocation_lines_2[0]-1], new_code[allocation_lines_2[1]-1] = '\n', '\n'
+			else:
+				# Pointer - Dynamic
+				new_code[allocation_lines_3[0]-1], new_code[allocation_lines_3[1]-1] = '\n', '\n'
+				new_code[allocation_lines_3[2]-1], new_code[allocation_lines_3[3]-1] = '\n', '\n'
+
+			'''
+			for _ in new_code:
+				print _,
+			raw_input()
+			'''
+
+
 			with open(INPUT + code, 'w') as w:
 				w.writelines(new_code)
 			
