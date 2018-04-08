@@ -82,7 +82,7 @@ def run_set(path):
 	
 	''' 1 and 2'''
 	for file in os.listdir(path):
-		print file
+		print (file)
 		data = {}
 		run = './' + file + ' & '
 		command_readelf('readelf -SW %s' % path + file)
