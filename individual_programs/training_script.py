@@ -1,20 +1,206 @@
-import pandas
-from sklearn import model_selection, tree
+from sklearn import preprocessing
+from sklearn.feature_selection import VarianceThreshold
+from sklearn.model_selection import GridSearchCV
 from sklearn.externals import joblib
 
-prog_map = {"bub":"1", "fac":"2", "mat":"3", "hs":"4"}
+from sklearn import model_selection, tree
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import AdaBoostRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.svm import SVR
+from sklearn.neural_network import MLPClassifier, MLPRegressor
+
+from sklearn.metrics import r2_score
+from sklearn.metrics import explained_variance_score
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
+
+import sys
+import pandas
+import graphviz
+
+prog_map = {"bub":"1", "fac":"2", "mat":"3", "hs":"4", "fib":"5", "ms":"6"}
+Y_test = []
+prediction = []
+
 df = pandas.read_csv("dataset.csv")
 array = df.values
+columns = df.columns
 X = array[:, 0:31]
+Y = array[:, 33]
+
 for index in range(len(X)):
     X[index][0] = prog_map[X[index][0]]
-Y = array[:, 33]
-test_size = 0.33
-seed = 7
-X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size=test_size, random_state=seed)
-clf = tree.DecisionTreeRegressor(criterion="mae", splitter="random")
-clf = clf.fit(X_train, Y_train)
-error_percentage = ((abs(clf.predict(X_test) - Y_test)/(Y_test))*100)
-print(sum(error_percentage)/len(error_percentage))
-filename = "model_individual.sav"
-joblib.dump(clf, filename)
+
+selection = VarianceThreshold()
+X = selection.fit_transform(X)
+
+temp_list = []
+selected_columns = selection.get_support()
+for i in range(len(selected_columns)):
+	if selected_columns[i]:
+		temp_list.append(columns[i])
+
+selected_columns = temp_list
+
+
+'''
+Decision Tree - C4.5
+'''
+
+def dt():
+	global Y_test, prediction
+	
+	test_size = 0.30
+	X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size = test_size)
+
+	model = tree.DecisionTreeRegressor(criterion = 'mse', splitter = 'best')
+	model.fit(X_train, Y_train)
+
+	prediction = model.predict(X_test)
+	print_accuracy(model, 'model_dt')
+
+	graphviz.Source(tree.export_graphviz(model,out_file=None,feature_names=selected_columns,filled=True,rounded=True,special_characters=True)).render('dt') 
+
+
+'''
+Decision Tree with ADA Boost
+'''
+
+def dtb():
+	global Y_test, prediction
+
+	test_size = 0.30
+	X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size=test_size)
+
+	model = AdaBoostRegressor(DecisionTreeRegressor(max_depth=50), n_estimators=25, loss = 'exponential')
+	model.fit(X_train, Y_train)
+
+	prediction = model.predict(X_test)
+	print_accuracy(model, 'model_dtb')
+
+
+'''
+Random Forest
+'''
+
+def rf():
+	global Y_test, prediction
+
+	test_size = 0.30
+	X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size=test_size)
+
+	model = RandomForestRegressor(criterion = 'mse', n_estimators = 10)
+	model.fit(X_train, Y_train)
+
+	prediction = model.predict(X_test)
+	print_accuracy(model, 'model_rf')
+
+
+'''
+k Nearest Neighbour
+'''
+
+def knn():
+	global Y_test, prediction
+
+	test_size = 0.40
+	X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size=test_size, random_state=1)
+
+	parameters = {'n_neighbors':[2, 5, 10], 'weights':['uniform', 'distance'], 'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute']}
+
+	#model = KNeighborsRegressor(n_neighbors = 2, algorithm='auto', weights='distance')
+	model = KNeighborsRegressor()
+	model = GridSearchCV(model, parameters, verbose = 1)
+	model.fit(X_train, Y_train)
+
+	prediction = model.predict(X_test)
+	print_accuracy(model, 'model_knn')
+
+
+'''
+Support Vector Machine
+'''
+
+def svm():
+	global Y_test, prediction
+	
+	test_size = 0.20
+	X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size=test_size, random_state=1)
+	
+	# This scales to negative values also. Hence some values in print_accuracy() may not be right.
+	X_train =  preprocessing.scale(X_train)
+	X_test = preprocessing.scale(X_test)
+	Y_train = preprocessing.scale(Y_train)
+	Y_test = preprocessing.scale(Y_test)
+
+	parameters = {'kernel':('linear', 'poly', 'rbf', 'sigmoid'), 'C':[1, 10], 'shrinking': (True, False)}
+	
+	#model = svm.SVR(C=1000, epsilon=0.1, kernel = 'rbf')
+	model = SVR()
+	model = GridSearchCV(model, parameters, verbose = 1)
+	model.fit(X_train, Y_train)
+	
+	prediction = model.predict(X_test)
+	print_accuracy(model, 'model_svm')
+
+
+'''
+Multi Layer Perceptron
+'''
+
+def mlp():
+	global Y_test, prediction
+	
+	test_size = 0.30
+	X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size=test_size, random_state=1)
+	
+	# This scales to negative values also. Hence some values in print_accuracy() may not be right.
+	X_train =  preprocessing.scale(X_train)
+	X_test = preprocessing.scale(X_test)
+	Y_train = preprocessing.scale(Y_train)
+	Y_test = preprocessing.scale(Y_test)
+	
+	param_grid = [{'activation' : ['identity', 'logistic', 'tanh', 'relu'], 'solver' : ['lbfgs', 'sgd', 'adam'], 'hidden_layer_sizes': [(1,),(5,),(10,),(15,),(20,),(30,),(50,)]}]
+	
+	model = MLPRegressor()
+	model = GridSearchCV(model, param_grid, verbose = 1)
+	model.fit(X_train, Y_train)
+
+	prediction = model.predict(X_test)
+	print_accuracy(model, 'model_mlp')
+
+
+'''
+Accuracy and error statistics
+'''
+
+def print_accuracy(model, name):
+	difference = []
+	for i in range(len(prediction)):
+		difference.append(abs(prediction[i] - Y_test[i])/float(Y_test[i]))
+
+	print('Raw Accuracy = ' + str(100.0 - (sum(difference)/len(difference))))
+	print('R2 Score = ' + str(r2_score(Y_test, prediction)))
+	print('Explained Variance = ' + str(explained_variance_score(Y_test, prediction)))
+	print('MAE = ' + str(mean_absolute_error(Y_test, prediction)))
+	print('MSE = ' + str(mean_squared_error(Y_test, prediction)))
+	joblib.dump(model, name + '.sav')
+
+
+try:
+	def undefined():
+		print('No ML algorithm called ' + sys.arv[1])
+
+	{
+		'dt' : dt,
+		'dtb': dtb,
+		'rf' : rf,
+		'knn': knn,
+		'svm': svm,
+		'mlp': mlp,
+	}.get(sys.argv[1], undefined)()
+
+except IndexError:
+	print('No input model')
