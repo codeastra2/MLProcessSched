@@ -1,6 +1,7 @@
 import pandas
 from sklearn import model_selection, tree
 import csv
+from sklearn.externals import joblib
 
 
 def process_op_line(line):
@@ -59,3 +60,5 @@ clf = tree.DecisionTreeRegressor(criterion="mae", splitter="random")
 clf = clf.fit(X_train, Y_train)
 error_percentage = ((abs(clf.predict(X_test) - Y_test)/(Y_test))*100)
 print(sum(error_percentage)/len(error_percentage))
+filename = "model_batch.sav"
+joblib.dump(clf, filename)
