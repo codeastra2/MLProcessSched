@@ -181,7 +181,7 @@ def print_accuracy(model, name):
 	for i in range(len(prediction)):
 		difference.append(abs(prediction[i] - Y_test[i])/float(Y_test[i]))
 
-	print('Raw Accuracy = ' + str(100.0 - (sum(difference)/len(difference))))
+	print('Raw Accuracy = ' + str(100.0 - (100 * sum(difference)/len(difference))))
 	print('R2 Score = ' + str(r2_score(Y_test, prediction)))
 	print('Explained Variance = ' + str(explained_variance_score(Y_test, prediction)))
 	print('MAE = ' + str(mean_absolute_error(Y_test, prediction)))
