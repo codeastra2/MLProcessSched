@@ -17,8 +17,11 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
 
 import sys
+import numpy as np
 import pandas
 import graphviz
+import scikitplot
+import matplotlib.pyplot as plt
 
 prog_map = {"bub":"1", "fac":"2", "mat":"3", "hs":"4", "fib":"5", "ms":"6"}
 Y_test = []
@@ -61,7 +64,13 @@ def dt():
 	prediction = model.predict(X_test)
 	print_accuracy(model, 'model_dt')
 
-	graphviz.Source(tree.export_graphviz(model,out_file=None,feature_names=selected_columns,filled=True,rounded=True,special_characters=True)).render('dt') 
+	scikitplot.estimators.plot_feature_importances(model, feature_names=selected_columns, x_tick_rotation = 90, order = None, text_fontsize='small')
+	plt.title('')
+	plt.ylabel('Feature Importance')
+	plt.show()
+
+	
+	#graphviz.Source(tree.export_graphviz(model,out_file=None,feature_names=selected_columns,filled=True,rounded=True,special_characters=True)).render('dt.png')
 
 
 '''
@@ -80,6 +89,15 @@ def dtb():
 	prediction = model.predict(X_test)
 	print_accuracy(model, 'model_dtb')
 
+	plt.plot(range(len(prediction)), prediction, 'ro')
+	plt.plot(range(len(prediction)), Y_test)
+	plt.legend(['Prediction', 'Actual data'], loc = 'best')
+	plt.title('')
+	plt.xlabel('Testing data')
+	plt.ylabel('Time in microseconds')
+	plt.show()
+
+
 
 '''
 Random Forest
@@ -92,10 +110,14 @@ def rf():
 	X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size=test_size)
 
 	model = RandomForestRegressor(criterion = 'mse', n_estimators = 10)
-	model.fit(X_train, Y_train)
+	clf = model.fit(X_train, Y_train)
 
 	prediction = model.predict(X_test)
 	print_accuracy(model, 'model_rf')
+	
+	scikitplot.estimators.plot_learning_curve(model, X_test, Y_test)
+	plt.title('Learning Curve')
+	plt.show()
 
 
 '''
@@ -118,6 +140,11 @@ def knn():
 	prediction = model.predict(X_test)
 	print_accuracy(model, 'model_knn')
 
+	plt.hist(Y_test, bins = 100, histtype = 'stepfilled')
+	plt.xlabel('Testing data')
+	plt.ylabel('Time in microseconds')
+	plt.show()
+	
 
 '''
 Support Vector Machine
@@ -179,7 +206,7 @@ Accuracy and error statistics
 def print_accuracy(model, name):
 	difference = []
 	for i in range(len(prediction)):
-		difference.append(abs(prediction[i] - Y_test[i])/float(Y_test[i]))
+		difference.append( abs(prediction[i] - Y_test[i])/Y_test[i] )
 
 	print('Raw Accuracy = ' + str(100.0 - (100 * sum(difference)/len(difference))))
 	print('R2 Score = ' + str(r2_score(Y_test, prediction)))
