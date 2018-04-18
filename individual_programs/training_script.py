@@ -218,7 +218,7 @@ def print_accuracy(model, name):
 
 try:
 	def undefined():
-		print('No ML algorithm called ' + sys.arv[1])
+		print('No ML algorithm called ' + sys.argv[1])
 
 	{
 		'dt' : dt,
