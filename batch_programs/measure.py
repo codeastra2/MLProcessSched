@@ -51,14 +51,14 @@ def count():
 
 
 def write_results():
-	li1 = [sum(time_zero_nice_total), sum(time_custom_nice_total), sum(time_zero_nice_total) - sum(time_custom_nice_total), (sum(time_zero_nice_total) - sum(time_custom_nice_total))/len(time_zero_nice_total), (1.0 * sum(time_custom_nice_total)/sum(time_zero_nice_total))]
-	li2 = [sum(time_zero_nice_better), sum(time_custom_nice_better), sum(time_zero_nice_better) - sum(time_custom_nice_better), (sum(time_zero_nice_better) - sum(time_custom_nice_better))/len(time_zero_nice_better), (1.0 * sum(time_custom_nice_better)/sum(time_zero_nice_better))]
-	li3 = [sum(time_zero_nice_worse), sum(time_custom_nice_worse), sum(time_zero_nice_worse) - sum(time_custom_nice_worse), (sum(time_zero_nice_worse) - sum(time_custom_nice_worse))/len(time_zero_nice_worse), (1.0 * sum(time_custom_nice_worse)/sum(time_zero_nice_worse))]
+	li1 = [sum(time_zero_nice_total), sum(time_custom_nice_total), sum(time_zero_nice_total) - sum(time_custom_nice_total), (sum(time_zero_nice_total) - sum(time_custom_nice_total))/len(time_zero_nice_total), (better_ratio * 100), (1.0 * sum(time_custom_nice_total)/sum(time_zero_nice_total))]
+	li2 = [sum(time_zero_nice_better), sum(time_custom_nice_better), sum(time_zero_nice_better) - sum(time_custom_nice_better), (sum(time_zero_nice_better) - sum(time_custom_nice_better))/len(time_zero_nice_better), (better_ratio * 100), (better_ratio * 100), (1.0 * sum(time_custom_nice_better)/sum(time_zero_nice_better))]
+	li3 = [sum(time_zero_nice_worse), sum(time_custom_nice_worse), sum(time_zero_nice_worse) - sum(time_custom_nice_worse), (sum(time_zero_nice_worse) - sum(time_custom_nice_worse))/len(time_zero_nice_worse), (better_ratio * 100), (1.0 * sum(time_custom_nice_worse)/sum(time_zero_nice_worse))]
 
 	with open('results.csv', 'a') as f:
 		w = csv.writer(f, dialect='excel')
 		if os.stat('results.csv').st_size == 0:
-			w.writerow(['model','case', 'Time for 0 nice value', 'Time for custom nice value', 'Time saved', 'Time saved per program', 'Ratio of custom and 0 nice'])
+			w.writerow(['model','case', 'Time for 0 nice value', 'Time for custom nice value', 'Time saved', 'Time saved per program', 'Percentage of programs better', 'Ratio of custom and 0 nice'])
 		w.writerow([sys.argv[1], 'total'] + li1)
 		w.writerow([sys.argv[1], 'better'] + li2)
 		w.writerow([sys.argv[1], 'worse'] + li3)
