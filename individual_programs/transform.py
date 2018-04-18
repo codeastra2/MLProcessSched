@@ -1,9 +1,11 @@
 # To pick only rows having nice value greater than 0
 import csv
+import random
 
 first = True
+neg = 0
 
-with open('dataset.csv', 'r') as csvfile:
+with open('dataset_with_negative.csv', 'r') as csvfile:
 	rows = csv.reader(csvfile)
 	with open('transform.csv', 'w') as f:
 		writer = csv.writer(f)
@@ -14,3 +16,10 @@ with open('dataset.csv', 'r') as csvfile:
 				continue
 			if int(row[19]) > 0:
 				writer.writerow(row)
+			elif neg < 100 and random.randint(1,20) > 19:   # Bias = 5 out of 100
+				neg += 1
+				if int(row[19]) < -15:
+					row[19] = int(row[19]) + 5
+				writer.writerow(row)
+
+print(neg)
