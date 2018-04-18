@@ -6,7 +6,7 @@ import pandas
 filename = "model_batch.sav"
 model = joblib.load(filename)
 
-prog_rev = {"1":"bub.c", "2":"fac.c", "3":"mat.c", "4":"hs.c"}
+prog_rev = {"1":"bub.c", "2":"fib.c", "3":"mat.c", "4":"ms.c"}
 nice_values = [-15, -7, 0, 7, 15]
 nice_value_list = []
 for val1 in nice_values:
