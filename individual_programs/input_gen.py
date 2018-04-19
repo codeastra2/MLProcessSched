@@ -1,7 +1,7 @@
 import csv
 import random
 
-nice_values = range(-20,20)
+nice_values = range(-15,20)
 
 m = {}
 m['bub.c'] = [1000,10000]
@@ -12,7 +12,7 @@ m['mat.c'] = [100,340]
 m['ms.c'] = [1000,100000]
 
 # List the programs that need to be run individually
-programs = ['mat.c']
+programs = ['bub.c', 'fac.c', 'mat.c', 'hs.c']
 
 with open('input.csv', 'w') as f:
 	w = csv.writer(f, dialect='excel')
