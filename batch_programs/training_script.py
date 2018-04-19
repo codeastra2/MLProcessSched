@@ -79,8 +79,21 @@ prediction = []
 
 df = pandas.read_csv("proc_dataset.csv")
 array = df.values
+columns = df.columns
 X = array[:, 0:124]
 Y = array[:, 124]
+
+selection = VarianceThreshold()
+X = selection.fit_transform(X)
+
+
+temp_list = []
+selected_columns = selection.get_support()
+for i in range(len(selected_columns)):
+    if selected_columns[i]:
+        temp_list.append(columns[i])
+
+selected_columns = temp_list
 
 
 '''
@@ -102,8 +115,7 @@ def dt():
     scikitplot.estimators.plot_feature_importances(model, feature_names=selected_columns, x_tick_rotation = 90, order = None, text_fontsize='small')
     plt.title('')
     plt.ylabel('Feature Importance')
-    plt.show()
-
+    #plt.show()
     
     #graphviz.Source(tree.export_graphviz(model,out_file=None,feature_names=selected_columns,filled=True,rounded=True,special_characters=True)).render('dt.png')
 
@@ -131,7 +143,6 @@ def dtb():
     plt.xlabel('Testing data')
     plt.ylabel('Time in microseconds')
     plt.show()
-
 
 
 '''
