@@ -3,7 +3,9 @@ from datetime import datetime
 import os
 import shutil
 import csv
+import itertools
 import random
+import re
 
 
 INPUT = os.getcwd() + '/programs/'
@@ -11,74 +13,67 @@ OUTPUT = os.getcwd() + '/exe/'
 ERROR = os.getcwd() + '/error/'
 codes = {}
 
-
 '''
-1. Writes new .c files with next set of input sizes and nice values
-2. Compiles and move executables to separate folder for that set
+1. Writes new .c files with input size and nice value
+2. Compiles and moves executables to separate folder
 '''
 
-def write(values, i):
-	global INPUT, OUTPUT, codes
+def write(program_name, program_code, input_size, nice_value):
+	global INPUT, OUTPUT
 
-	new_path = (OUTPUT + str(i))
+	new_path = (OUTPUT + program_name)
 	if not os.path.exists(new_path):
 		os.makedirs(new_path)
 
 	try:
-		for code in codes:
-			''' 1 '''
-			new_code = codes[code][:]
-			new_input_size = str(values[code][0])
-			new_nice_value = str(values[code][1])
+		new_code = program_code[:]
+		
+		''' Line numbers 9 and 10 in .c files '''
+		new_code[8] = '#define INPUT_SIZE ' + str(input_size) + '\n'
+		new_code[9] = '#define NICE_VALUE ' + str(nice_value) + '\n'
 
-			''' Line numbers 9 and 10 in .c files '''
-			new_code[8] = '#define INPUT_SIZE ' + new_input_size + '\n'
-			new_code[9] = '#define NICE_VALUE ' + new_nice_value + '\n'
-			
-			allocation_method = random.randint(0,2)
-			allocation_lines_1 = map(int, new_code[11].split('METHOD_1 ')[1].split(','))
-			allocation_lines_2 = map(int, new_code[12].split('METHOD_2 ')[1].split(','))
-			allocation_lines_3 = map(int, new_code[13].split('METHOD_3 ')[1].split(','))
+		allocation_method = random.randint(0,2)
+		allocation_lines_1 = map(int, new_code[11].split('METHOD_1 ')[1].split(','))
+		allocation_lines_2 = map(int, new_code[12].split('METHOD_2 ')[1].split(','))
+		allocation_lines_3 = map(int, new_code[13].split('METHOD_3 ')[1].split(','))
 
-			new_code[allocation_lines_1[0]-1], new_code[allocation_lines_1[1]-1] = '/*\n', '*/\n'
-			new_code[allocation_lines_2[0]-1], new_code[allocation_lines_2[1]-1] = '/*\n', '*/\n'
-			new_code[allocation_lines_3[0]-1], new_code[allocation_lines_3[1]-1] = '/*\n', '*/\n'
-			new_code[allocation_lines_3[2]-1], new_code[allocation_lines_3[3]-1] = '/*\n', '*/\n'
+		new_code[allocation_lines_1[0]-1], new_code[allocation_lines_1[1]-1] = '/*\n', '*/\n'
+		new_code[allocation_lines_2[0]-1], new_code[allocation_lines_2[1]-1] = '/*\n', '*/\n'
+		new_code[allocation_lines_3[0]-1], new_code[allocation_lines_3[1]-1] = '/*\n', '*/\n'
+		new_code[allocation_lines_3[2]-1], new_code[allocation_lines_3[3]-1] = '/*\n', '*/\n'
 
-			if allocation_method == 0:
-				# Static variable
-				new_code[allocation_lines_1[0]-1], new_code[allocation_lines_1[1]-1] = '\n', '\n'
-			elif allocation_method == 1:
-				# Non-static variable
-				new_code[allocation_lines_2[0]-1], new_code[allocation_lines_2[1]-1] = '\n', '\n'
-			else:
-				# Pointer - Dynamic
-				new_code[allocation_lines_3[0]-1], new_code[allocation_lines_3[1]-1] = '\n', '\n'
-				new_code[allocation_lines_3[2]-1], new_code[allocation_lines_3[3]-1] = '\n', '\n'
+		if allocation_method == 0:
+			# Static variable
+			new_code[allocation_lines_1[0]-1], new_code[allocation_lines_1[1]-1] = '\n', '\n'
+		elif allocation_method == 1:
+			# Non-static variable
+			new_code[allocation_lines_2[0]-1], new_code[allocation_lines_2[1]-1] = '\n', '\n'
+		else:
+			# Pointer - Dynamic
+			new_code[allocation_lines_3[0]-1], new_code[allocation_lines_3[1]-1] = '\n', '\n'
+			new_code[allocation_lines_3[2]-1], new_code[allocation_lines_3[3]-1] = '\n', '\n'
 
-			'''
-			for _ in new_code:
-				print _,
-			raw_input()
-			'''
+		'''
+		for _ in new_code:
+			print _,
+		raw_input()
+		'''
 
-
-			with open(INPUT + code, 'w') as w:
-				w.writelines(new_code)
-			
-			''' 2 '''
-			command = 'gcc %s -o %s/%s_%s_%s' % (INPUT + code, new_path, code.split('.')[0], new_input_size, new_nice_value)
-			#print command
-			#sub = Popen(command, shell=True, stdout=PIPE)
-			
-			if Popen(command, stdout=PIPE, stderr = PIPE, shell = True).communicate()[1] != '':
-				raise Exception('Error in gcc')			
+		with open(INPUT + program_name + '.c', 'w') as w:
+			w.writelines(new_code)
+		
+		''' 2 '''
+		command = 'gcc %s -o %s/%s_%s_%s' % (INPUT + program_name + '.c', new_path, program_name.split('.')[0], input_size, nice_value)
+		#print command
+		
+		if Popen(command, stdout=PIPE, stderr = PIPE, shell = True).communicate()[1] != '':
+			raise Exception('Error in gcc')			
 
 	except Exception as e:
 		print(e)
 		shutil.rmtree(new_path)
 		with open(ERROR + 'error.txt', 'a') as f:
-			f.write(str(datetime.now().strftime("%Y_%m_%d_%H_%M_%S")) + '\t' + 'Compiling\t' + str(i) + '\t' + str(e) + '\n')
+			f.write(str(datetime.now().strftime("%Y_%m_%d_%H_%M_%S")) + '\t' + 'Compiling\tNew\t' + str(e) + '\n')
 
 
 '''
@@ -107,29 +102,13 @@ def main():
 
 	read_codes()
 	
-	''' Range to be entered by user. It corresponds to row id in input.csv '''
-
-	start, end = raw_input('Enter start and end index (both inclusive) to run\n').split(' ')
-	start = int(start)
-	end = int(end)
-
 	with open('input.csv', 'r') as csvfile:
-		i = 1
 		rows = csv.reader(csvfile)
-		
+
 		for row in rows:
-			''' Compiles programs within the input range '''
-			if i >= start and i<=end:
-				print ('Compiling ' + row[0])
-				del row[0]
-				
-				values = {}
-				values[row[0]] = [int(row[1]), int(row[2])]
-				values[row[3]] = [int(row[4]), int(row[5])]
-				values[row[6]] = [int(row[7]), int(row[8])]
-				values[row[9]] = [int(row[10]), int(row[11])]
-				write(values, i)
-			i += 1
+			''' Compile for each combination '''
+			print('Compiling ' + row[0].split('.')[0] + '_' + str(row[1]) + '_' + str(row[2]))
+			write(row[0].split('.')[0], codes[row[0]], row[1], row[2])
 
 
 if __name__ == "__main__":
