@@ -69,7 +69,9 @@ def dt():
 	plt.ylabel('Feature Importance')
 	plt.show()
 
-	
+	li = [ [importance, name] for name, importance in zip(selected_columns, model.feature_importances_) ]
+	li.sort(reverse=True)
+	print(li)
 	#graphviz.Source(tree.export_graphviz(model,out_file=None,feature_names=selected_columns,filled=True,rounded=True,special_characters=True)).render('dt.png')
 
 
