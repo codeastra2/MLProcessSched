@@ -12,8 +12,6 @@ INPUT = os.getcwd() + '/programs/'
 OUTPUT = os.getcwd() + '/exe/'
 ERROR = os.getcwd() + '/error/'
 codes = {}
-nice_values = [-18, -9, 0, 9, 18]
-
 
 '''
 1. Writes new .c files with input size and nice value
