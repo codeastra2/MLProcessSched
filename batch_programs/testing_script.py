@@ -7,8 +7,8 @@ import random
 
 filename = 'model_' + sys.argv[1] +'.sav'
 nice_filename = 'model_' + sys.argv[1] + '.sav'
-use_nice_model = True
-if not use_nice_model:
+use_nice_model = False
+if use_nice_model:
     nice_model = joblib.load(nice_filename)
 model = joblib.load(filename)
 min_nice = -15
@@ -53,7 +53,7 @@ for row in X:
     for idx in range(0, 4):
         prog_names.append(prog_rev[str(row[0+31*idx])])
         input_sizes.append(row[17 + idx*31])
-    if use_nice_model:
+    if not use_nice_model:
         nice_values = find_best_nice_value(row)
     else:
         nice_value_input = row.tolist()
