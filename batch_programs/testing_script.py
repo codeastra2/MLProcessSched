@@ -6,6 +6,10 @@ import pandas
 import random
 
 filename = 'model_' + sys.argv[1] +'.sav'
+nice_filename = 'model_' + sys.argv[1] + '.sav'
+use_nice_model = True
+if not use_nice_model:
+    nice_model = joblib.load(nice_filename)
 model = joblib.load(filename)
 min_nice = -15
 max_nice = 19
@@ -27,6 +31,13 @@ def find_best_nice_value(row):
         if exe_time < min_time:
             best_nice_value = nice_value
             min_time = exe_time
+    with open('nice_value_input_' + sys.argv[1] + '.csv', 'a') as f:
+        w = csv.writer(f, dialect='excel')
+        nice_value_input = row[0].tolist()
+        for idx in range(3, -1, -1):
+            del nice_value_input[19 + idx * 31]
+        nice_value_input.extend(best_nice_value)
+        w.writerow(nice_value_input)
     return best_nice_value
 
 
@@ -42,7 +53,13 @@ for row in X:
     for idx in range(0, 4):
         prog_names.append(prog_rev[str(row[0+31*idx])])
         input_sizes.append(row[17 + idx*31])
-    nice_values = find_best_nice_value(row)
+    if use_nice_model:
+        nice_values = find_best_nice_value(row)
+    else:
+        nice_value_input = row.tolist()
+        for idx in range(3, -1, -1):
+            del nice_value_input[19 + idx * 31]
+        nice_values = nice_model.predict(nice_value_input).tolist()
     new_input = [len(new_input_list) + 1]
     for idx in range(0, 4):
         new_input.append(prog_names[idx])
