@@ -4,9 +4,10 @@ import sys
 import csv
 import pandas
 import random
+import numpy as np
 
 filename = 'model_' + sys.argv[1] +'.sav'
-nice_filename = 'model_' + sys.argv[1] + '.sav'
+nice_filename = 'model_nice_batch_' + sys.argv[1] + '.sav'
 use_nice_model = False
 if use_nice_model:
     nice_model = joblib.load(nice_filename)
@@ -15,6 +16,7 @@ min_nice = -15
 max_nice = 19
 
 prog_rev = {"1":"bub.c", "2":"fib.c", "3":"mat.c", "4":"ms.c"}
+
 nice_value_list = []
 for i in range(50):
     nice_value_list.append([random.randint(min_nice, max_nice), random.randint(min_nice, max_nice), random.randint(min_nice, max_nice), random.randint(min_nice, max_nice)])
@@ -59,7 +61,10 @@ for row in X:
         nice_value_input = row.tolist()
         for idx in range(3, -1, -1):
             del nice_value_input[19 + idx * 31]
-        nice_values = nice_model.predict(nice_value_input).tolist()
+        nice_value_input = np.asarray(nice_value_input)
+        nice_value_input = nice_value_input.reshape(1, -1)
+        nice_values = nice_model.predict(nice_value_input).tolist()[0]
+        nice_values = [int(nice_value) for nice_value in nice_values]
     new_input = [len(new_input_list) + 1]
     for idx in range(0, 4):
         new_input.append(prog_names[idx])
