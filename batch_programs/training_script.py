@@ -82,18 +82,7 @@ array = df.values
 columns = df.columns
 X = array[:, 0:124]
 Y = array[:, 124]
-
-selection = VarianceThreshold()
-X = selection.fit_transform(X)
-
-
-temp_list = []
-selected_columns = selection.get_support()
-for i in range(len(selected_columns)):
-    if selected_columns[i]:
-        temp_list.append(columns[i])
-
-selected_columns = temp_list
+selected_columns = columns
 
 
 '''
