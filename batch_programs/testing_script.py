@@ -48,9 +48,9 @@ X = array[:, 0:124]
 
 
 nice_value_list = []
-for i in range(int(0.4 * len(X))):      
+for i in range(int(0.4 * len(X))):
     # Number of random values = 40% of dataset length 
-    nice_value_list.append([random.randint(min_nice, 5), random.randint(min_nice, max_nice), random.randint(min_nice, 5), random.randint(min_nice, max_nice)])
+    nice_value_list.append([random.randint(min_nice, max_nice), random.randint(min_nice, max_nice), random.randint(min_nice, max_nice), random.randint(min_nice, max_nice)])
 
 
 new_input_list = []
