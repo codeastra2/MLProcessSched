@@ -1,25 +1,24 @@
 from sklearn.externals import joblib
 
+import os
 import sys
 import csv
 import pandas
 import random
 import numpy as np
 
-filename = 'model_' + sys.argv[1] +'.sav'
-nice_filename = 'model_nice_batch_' + sys.argv[1] + '.sav'
+
 use_nice_model = False
+if len(sys.argv) > 2:
+    if sys.argv[2] == 'true':
+        use_nice_model = True
 if use_nice_model:
-    nice_model = joblib.load(nice_filename)
-model = joblib.load(filename)
+    nice_model = joblib.load('model_nice_batch_' + sys.argv[1] + '.sav')
+
+model = joblib.load('model_' + sys.argv[1] + '.sav')
 min_nice = -15
 max_nice = 19
-
 prog_rev = {"1":"bub.c", "2":"fib.c", "3":"mat.c", "4":"ms.c"}
-
-nice_value_list = []
-for i in range(50):
-    nice_value_list.append([random.randint(min_nice, max_nice), random.randint(min_nice, max_nice), random.randint(min_nice, max_nice), random.randint(min_nice, max_nice)])
 
 
 def find_best_nice_value(row):
@@ -43,13 +42,22 @@ def find_best_nice_value(row):
     return best_nice_value
 
 
-df = pandas.read_csv("proc_dataset.csv")
+df = pandas.read_csv('proc_dataset_isolated.csv')
 array = df.values
 X = array[:, 0:124]
 
 
+nice_value_list = []
+for i in range(int(0.4 * len(X))):      
+    # Number of random values = 40% of dataset length 
+    nice_value_list.append([random.randint(min_nice, 5), random.randint(min_nice, max_nice), random.randint(min_nice, 5), random.randint(min_nice, max_nice)])
+
+
 new_input_list = []
+counter = 1
 for row in X:
+    print(counter, len(X))
+    counter += 1
     prog_names = []
     input_sizes = []
     for idx in range(0, 4):
