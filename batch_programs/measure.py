@@ -15,8 +15,8 @@ better_count = 0
 better_time = []
 better_ratio = 0
 
-time_custom_nice_total = []
-time_zero_nice_total = []
+time_custom_nice_all = []
+time_zero_nice_all = []
 
 time_custom_nice_better = []
 time_zero_nice_better = []
@@ -26,32 +26,39 @@ time_zero_nice_worse = []
 
 
 def count():
-	global better_count, better_time, better_ratio, time_custom_nice_total, time_zero_nice_total, time_custom_nice_better, time_zero_nice_better, time_custom_nice_worse, time_zero_nice_worse
-	for index in range(0, len(Y), 2):
-	    if index + 1 < len(Y):
-	        if (Y[index+1] - Y[index]) > 0:
-	            better_count += 1
-	            better_time.append(Y[index+1] - Y[index])
-	            time_custom_nice_better.append(Y[index])
-	            time_zero_nice_better.append(Y[index+1])
-	        else:
-	        	time_custom_nice_worse.append(Y[index])
-	        	time_zero_nice_worse.append(Y[index+1])
-	        
-	        time_custom_nice_total.append(Y[index])
-	        time_zero_nice_total.append(Y[index+1])
+	global better_count, better_time, better_ratio, time_custom_nice_all, time_zero_nice_all, time_custom_nice_better, time_zero_nice_better, time_custom_nice_worse, time_zero_nice_worse
+	for index in range(0, len(Y), 8):
+		if index + 8 < len(Y):
+			time_sum_custom = Y[index] + Y[index+1] + Y[index+2] + Y[index+3]
+			time_sum_zero = Y[index+4] + Y[index+5] + Y[index+6] + Y[index+7]
+			time_custom_nice_all.append(time_sum_custom)
+	        time_zero_nice_all.append(time_sum_zero)
 
-	better_ratio = 2.0 * better_count/len(Y)
-	print(better_count, len(Y))
+	        if time_sum_zero >= time_sum_custom:
+				better_count += 1
+				better_time.append(time_sum_zero - time_sum_custom)
+				time_custom_nice_better.append(time_sum_custom)
+				time_zero_nice_better.append(time_sum_zero)
+	        else:
+				time_custom_nice_worse.append(time_sum_custom)
+				time_zero_nice_worse.append(time_sum_zero)
+
+	#print(len(time_custom_nice_better), len(time_custom_nice_worse), len(time_custom_nice_all))
+	if len(time_custom_nice_all) - len(time_custom_nice_better) - len(time_custom_nice_worse) > 0 :
+		print(len(time_custom_nice_better), len(time_custom_nice_worse), len(time_custom_nice_all))
+		raw_input('Lengths not matching')
+
+	better_ratio = 1.0 * better_count/len(time_custom_nice_all)
+	print(better_count, len(time_custom_nice_all))
 	print(better_ratio * 100)
-	print((1.0 * sum(time_custom_nice_total)/sum(time_zero_nice_total)))
+	print((1.0 * sum(time_custom_nice_all)/sum(time_zero_nice_all)))
 
 	write_results()
 	plots()
 
 
 def write_results():
-	li1 = [sum(time_zero_nice_total), sum(time_custom_nice_total), sum(time_zero_nice_total) - sum(time_custom_nice_total), (sum(time_zero_nice_total) - sum(time_custom_nice_total))/len(time_zero_nice_total), (better_ratio * 100), (1.0 * sum(time_custom_nice_total)/sum(time_zero_nice_total))]
+	li1 = [sum(time_zero_nice_all), sum(time_custom_nice_all), sum(time_zero_nice_all) - sum(time_custom_nice_all), (sum(time_zero_nice_all) - sum(time_custom_nice_all))/len(time_zero_nice_all), (better_ratio * 100), (1.0 * sum(time_custom_nice_all)/sum(time_zero_nice_all))]
 	li2 = [sum(time_zero_nice_better), sum(time_custom_nice_better), sum(time_zero_nice_better) - sum(time_custom_nice_better), (sum(time_zero_nice_better) - sum(time_custom_nice_better))/len(time_zero_nice_better), (better_ratio * 100), (1.0 * sum(time_custom_nice_better)/sum(time_zero_nice_better))]
 	li3 = [sum(time_zero_nice_worse), sum(time_custom_nice_worse), sum(time_zero_nice_worse) - sum(time_custom_nice_worse), (sum(time_zero_nice_worse) - sum(time_custom_nice_worse))/len(time_zero_nice_worse), (better_ratio * 100), (1.0 * sum(time_custom_nice_worse)/sum(time_zero_nice_worse))]
 
@@ -67,28 +74,30 @@ def write_results():
 def plots():
 	len_list = [point for point in range(1, len(better_time)+1)]
 	 
-	#plt.hist([max(a-b,0) for a,b in zip(time_zero_nice_total, time_custom_nice_total)], bins = 100, histtype = 'stepfilled', color='g')
-	#plt.bar(range(len(time_custom_nice_total)), [a-b for a,b in zip(time_zero_nice_total, time_custom_nice_total)], color='g')
 	plt.title('Scatter plot for showing time saved by custom nice value')
 	plt.xlabel('Testing data instances')
 	plt.ylabel('Time saved (in microseconds)')
-	#plt.show()
+	plt.show()
 	
 	plt.subplot(211)
-	plt.plot(range(len(time_custom_nice_total[0:100])), time_custom_nice_total[0:100])
-	plt.plot(range(len(time_zero_nice_total[0:100])), time_zero_nice_total[0:100])
+	plt.plot(range(len(time_custom_nice_all[0:100])), time_custom_nice_all[0:100])
+	plt.plot(range(len(time_zero_nice_all[0:100])), time_zero_nice_all[0:100])
 	plt.title('Turn around time comparison ')
 	plt.ylabel('Time (in microseconds)')
 	plt.legend(['Custom nice value', 'Zero nice value'], loc = 'upper left')
 
 	plt.subplot(212)
-	plt.plot(range(len(time_custom_nice_total[100:200])), time_custom_nice_total[100:200])
-	plt.plot(range(len(time_zero_nice_total[100:200])), time_zero_nice_total[100:200])
+	plt.plot(range(len(time_custom_nice_all[100:200])), time_custom_nice_all[100:200])
+	plt.plot(range(len(time_zero_nice_all[100:200])), time_zero_nice_all[100:200])
 	plt.xlabel('Testing data instances')
 	plt.ylabel('Time (in microseconds)')
 	plt.legend(['Custom nice value', 'Zero nice value'], loc = 'upper left')
 
 	plt.show()
-	
+	step = len(time_zero_nice_all) / 20
+	for i in range(0, len(time_zero_nice_all), step):
+		if i + step < len(time_zero_nice_all):
+			print('Testing set '+str(i)+' to '+str(i+step)+ ': ' +str(1.0*sum(time_custom_nice_all[i:i+step])/sum(time_zero_nice_all[i:i+step])))
+
 
 count()
