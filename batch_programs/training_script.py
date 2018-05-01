@@ -19,6 +19,7 @@ from sklearn.metrics import mean_squared_error
 import sys
 import csv
 import numpy as np
+import random
 import pandas
 import graphviz
 import scikitplot
@@ -58,7 +59,7 @@ programs = ["bub", "fib", "mat", "ms"]
 prog_output_dict = {"bub": "", "fib": "", "mat": "", "ms": ""}
 prog_map = {"bub":"1", "fib":"2", "mat":"3", "ms":"4"}
 line = "*"+ ",*"*124
-new_lines.append(line)
+# new_lines.append(line)
 for index in range(1, len(lines), 4):
     new_line = []
     for idx in range(index, index+4):
@@ -67,12 +68,20 @@ for index in range(1, len(lines), 4):
     new_line = combine_lines(new_line)
     new_lines.append(new_line)
 
+# Isolate certain records for testing model at a later stage
+random.shuffle(new_lines)
+dataset_isolated = [line] + new_lines[int(0.8 * len(new_lines)):]
+new_lines = [line] + new_lines[:int(0.8*len(new_lines))]
+
+with open('proc_dataset_isolated.csv', 'w') as f:
+    csvwriter = csv.writer(f, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    for line in dataset_isolated:
+        csvwriter.writerow(line.split())
 
 with open('proc_dataset.csv', 'w') as f:
     csvwriter = csv.writer(f, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
     for line in new_lines:
         csvwriter.writerow(line.split())
-
 
 Y_test = []
 prediction = []
@@ -104,7 +113,7 @@ def dt():
     scikitplot.estimators.plot_feature_importances(model, feature_names=selected_columns, x_tick_rotation = 90, order = None, text_fontsize='small')
     plt.title('')
     plt.ylabel('Feature Importance')
-    #plt.show()
+    plt.show()
     
     #graphviz.Source(tree.export_graphviz(model,out_file=None,feature_names=selected_columns,filled=True,rounded=True,special_characters=True)).render('dt.png')
 
@@ -116,7 +125,7 @@ Decision Tree with ADA Boost
 def dtb():
     global Y_test, prediction
 
-    test_size = 0.30
+    test_size = 0.15
     X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size=test_size)
 
     model = AdaBoostRegressor(DecisionTreeRegressor(max_depth=50), n_estimators=25, loss = 'exponential')
@@ -141,7 +150,7 @@ Random Forest
 def rf():
     global Y_test, prediction
 
-    test_size = 0.30
+    test_size = 0.20
     X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size=test_size)
 
     model = RandomForestRegressor(criterion = 'mse', n_estimators = 10)
