@@ -172,7 +172,6 @@ def knn():
 
     parameters = {'n_neighbors':[2, 5, 10], 'weights':['uniform', 'distance'], 'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute']}
 
-    #model = KNeighborsRegressor(n_neighbors = 2, algorithm='auto', weights='distance')
     model = KNeighborsRegressor()
     model = GridSearchCV(model, parameters, verbose = 1)
     model.fit(X_train, Y_train)
