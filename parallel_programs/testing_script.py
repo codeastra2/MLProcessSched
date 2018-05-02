@@ -13,7 +13,7 @@ if len(sys.argv) > 2:
     if sys.argv[2] == 'true':
         use_nice_model = True
 if use_nice_model:
-    nice_model = joblib.load('model_nice_batch_' + sys.argv[1] + '.sav')
+    nice_model = joblib.load('model_' + sys.argv[1] + '_nice.sav')
 
 model = joblib.load('model_' + sys.argv[1] + '.sav')
 min_nice = -15
