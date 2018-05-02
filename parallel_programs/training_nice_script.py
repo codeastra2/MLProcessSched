@@ -21,6 +21,6 @@ for idx, y_expected in enumerate(Y_test):
     if y_actual.tolist() == y_expected.tolist():
         accu_count += 1
 
-print("The accuracy percentage is: " + str(accu_count*100/len(Y_test)))
-filename = "model_nice_batch_" + sys.argv[1] + ".sav"
+print('The accuracy percentage is: ' + str(accu_count*100/len(Y_test)))
+filename = 'model_' + sys.argv[1] + '_nice.sav'
 joblib.dump(model, filename)
