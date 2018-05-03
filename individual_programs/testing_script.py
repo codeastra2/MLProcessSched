@@ -11,7 +11,7 @@ model = joblib.load('model_' + sys.argv[1] + '.sav')
 prog_map = {"bub":"1", "fac":"2", "mat":"3", "hs":"4", "fib":"5", "ms":"6"}
 prog_rev = {"1":"bub.c", "2":"fac.c", "3":"mat.c", "4":"hs.c", "5":"fib", "ms":"6"}
  
-df = pandas.read_csv("dataset.csv")
+df = pandas.read_csv("proc_dataset_isolated.csv")
 array = df.values
 X = array[:, 0:31]
 for index in range(len(X)):
@@ -28,6 +28,7 @@ def find_best_nice_value(row):
     best_nice_value = 0
     cnt = 0
     row = row.reshape(1, -1)
+
     for nice_value in range(1, 20):
         row[0][10] = nice_value
         exe_time = model.predict(row)[0]
