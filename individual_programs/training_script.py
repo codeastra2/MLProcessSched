@@ -17,46 +17,70 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
 
 import sys
+import csv
 import numpy as np
+import random
 import pandas
 import graphviz
 import scikitplot
 import matplotlib.pyplot as plt
 
-prog_map = {"bub":"1", "fac":"2", "mat":"3", "hs":"4", "fib":"5", "ms":"6"}
-Y_test = []
-prediction = []
 
 df = pandas.read_csv("dataset.csv")
 array = df.values
 columns = df.columns
-X = array[:, 0:31]
-Y = array[:, 33]
 
-for index in range(len(X)):
-    X[index][0] = prog_map[X[index][0]]
+prog_map = {"bub":"1", "fac":"2", "mat":"3", "hs":"4", "fib":"5", "ms":"6"}
+X = []
+Y = []
+Y_test = []
+selected_columns = []
+prediction = []
 
-selection = VarianceThreshold()
-X = selection.fit_transform(X)
+'''
+Extract, Transform, Load
+'''
+def etl():
+	global array, X, Y, selected_columns
 
-temp_list = []
-selected_columns = selection.get_support()
-for i in range(len(selected_columns)):
-	if selected_columns[i]:
-		temp_list.append(columns[i])
+	isolate = int(0.80 * len(array))
+	random.shuffle(array)
+	dataset_isolated = array[isolate:].tolist()
+	array = array[:isolate]
 
-selected_columns = temp_list
+	X = array[:, 0:31]
+	Y = array[:, 33]
+
+	for index in range(len(X)):
+	    X[index][0] = prog_map[X[index][0]]
+	
+	selection = VarianceThreshold()
+	X = selection.fit_transform(X)
+
+	temp_list = []
+	selected_columns = selection.get_support()
+	for i in range(len(selected_columns)):
+		if selected_columns[i]:
+			temp_list.append(columns[i])
+	selected_columns = temp_list
+
+	with open('proc_dataset_isolated.csv', 'w') as f:
+		csvwriter = csv.writer(f, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+		for line in dataset_isolated:
+			csvwriter.writerow(line)
+
+
+etl()
 
 
 '''
 Decision Tree - C4.5
 '''
-
 def dt():
 	global Y_test, prediction
 	
 	test_size = 0.30
-	X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size = test_size)
+	X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size = test_size, random_state = 1)
 
 	model = tree.DecisionTreeRegressor(criterion = 'mse', splitter = 'best')
 	model.fit(X_train, Y_train)
@@ -78,7 +102,6 @@ def dt():
 '''
 Decision Tree with ADA Boost
 '''
-
 def dtb():
 	global Y_test, prediction
 
@@ -104,7 +127,6 @@ def dtb():
 '''
 Random Forest
 '''
-
 def rf():
 	global Y_test, prediction
 
@@ -125,7 +147,6 @@ def rf():
 '''
 k Nearest Neighbour
 '''
-
 def knn():
 	global Y_test, prediction
 
@@ -151,7 +172,6 @@ def knn():
 '''
 Support Vector Machine
 '''
-
 def svm():
 	global Y_test, prediction
 	
@@ -178,7 +198,6 @@ def svm():
 '''
 Multi Layer Perceptron
 '''
-
 def mlp():
 	global Y_test, prediction
 	
@@ -204,7 +223,6 @@ def mlp():
 '''
 Accuracy and error statistics
 '''
-
 def print_accuracy(model, name):
 	difference = []
 	for i in range(len(prediction)):
