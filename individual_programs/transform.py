@@ -1,4 +1,4 @@
-# To pick only rows having nice value greater than 0
+# To pick only rows having nice value greater than certain value
 import csv
 import random
 
