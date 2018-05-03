@@ -79,7 +79,7 @@ def plots():
 	len_list = [point for point in range(1, len(better_time)+1)]
 	 
 	#plt.hist([max(a-b,0) for a,b in zip(time_zero_nice_total, time_custom_nice_total)], bins = 100, histtype = 'stepfilled', color='g')
-	#plt.bar(range(len(time_custom_nice_total)), [a-b for a,b in zip(time_zero_nice_total, time_custom_nice_total)], color='g')
+	plt.bar(range(len(time_custom_nice_total)), [a-b for a,b in zip(time_zero_nice_total, time_custom_nice_total)], color='g')
 	plt.title('Scatter plot for showing time saved by custom nice value')
 	plt.xlabel('Testing data instances')
 	plt.ylabel('Time saved (in microseconds)')
