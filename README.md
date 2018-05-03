@@ -12,5 +12,4 @@ COMMANDS TO RUN PYTHON FILES:
 8. distinct_values.py
 
 TO DO:
-1. Improving results for "Parallel programs".
-2. Improving results for "Individual programs".
+1. Improve results for "Parallel programs".
