@@ -83,7 +83,7 @@ def plots():
 	plt.title('Scatter plot for showing time saved by custom nice value')
 	plt.xlabel('Testing data instances')
 	plt.ylabel('Time saved (in microseconds)')
-	#plt.show()
+	plt.show()
 	
 	plt.subplot(211)
 	plt.plot(range(len(time_custom_nice_total[0:100])), time_custom_nice_total[0:100])
