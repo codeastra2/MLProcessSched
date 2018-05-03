@@ -104,11 +104,12 @@ def main():
 	
 	with open('input.csv', 'r') as csvfile:
 		rows = csv.reader(csvfile)
-
+		i = 0
 		for row in rows:
 			''' Compile for each combination '''
-			print('Compiling ' + row[0].split('.')[0] + '_' + str(row[1]) + '_' + str(row[2]))
+			print(str(i) + '. Compiling ' + row[0].split('.')[0] + '_' + str(row[1]) + '_' + str(row[2]))
 			write(row[0].split('.')[0], codes[row[0]], row[1], row[2])
+			i += 1
 
 
 if __name__ == "__main__":
