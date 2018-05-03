@@ -1,7 +1,7 @@
 import csv
 import random
 
-nice_values = range(-15,20)
+nice_values = range(1,20)
 
 m = {}
 m['bub.c'] = [1000,10000]
