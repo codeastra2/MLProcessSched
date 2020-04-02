@@ -1,4 +1,4 @@
-FINAL YEAR PROJECT
+ML Engine to optmise process scheduling of linux programs.
 
 COMMANDS TO RUN PYTHON FILES:
 1. input_gen.py
