@@ -1,15 +1,15 @@
-ML Engine to optmise process scheduling of linux programs.
+ML Engine to optimise process scheduling of programs run on Linux.
 
-COMMANDS TO RUN PYTHON FILES:
-1. input_gen.py
-2. compile.py
-3. run.py
-4. training_script.py < input model name >
-5. testing_script.py < input model name > < input 'true' to use training_nice_script >
-6. training_nice_script.py < input model name >
-6. measure.py < input model name >
-7. transform.py
-8. distinct_values.py
+STEPS TO RUN PYTHON FILES:
+1. python input_gen.py
+2. python compile.py
+3. python run.py
+4. python training_script.py < input model name >
+5. python testing_script.py < input model name > < input 'true' to use training_nice_script >
+6. python training_nice_script.py < input model name >
+6. python measure.py < input model name >
+7. python transform.py
+8. python distinct_values.py
 
 TO DO:
 1. Improve results for "Parallel programs".
